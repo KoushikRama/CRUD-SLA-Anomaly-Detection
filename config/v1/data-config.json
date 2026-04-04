@@ -1,0 +1,126 @@
+{
+  "_meta": {
+    "title": "Synthetic HTTP Method SLA Metrics Configuration",
+    "version": "1.0.0",
+    "description": "Synthetic SLA config based on HTTP methods (GET, POST, PUT, DELETE).",
+    "owner": "anomaly-detection-system",
+    "last_updated": "2026-04-04",
+    "logic": [
+      "Baseline values define normal behavior per HTTP method.",
+      "Randomness introduces ±5% variation to simulate real-world noise.",
+      "Hourly rules simulate expected workload patterns.",
+      "Any deviation outside this config should be treated as anomaly."
+    ]
+  },
+
+  "randomness": 0.05,
+
+  "commands_meta": {
+    "description": "Baseline behavior per HTTP method.",
+    "fields": [
+      "success_vol: expected average successful requests",
+      "success_rt: min/max success response time (ms)",
+      "fail_vol: expected average failed requests",
+      "fail_rt: min/max failure response time (ms)"
+    ]
+  },
+
+  "commands": {
+
+    "GET": {
+      "_meta": "High-volume read operation with very low latency",
+      "success_rt": [5, 15],
+      "success_vol": 80000,
+      "fail_rt": [2, 5],
+      "fail_vol": 400
+    },
+
+    "POST": {
+      "_meta": "Create operation with moderate latency and volume",
+      "success_rt": [20, 40],
+      "success_vol": 10000,
+      "fail_rt": [10, 20],
+      "fail_vol": 1500
+    },
+
+    "PUT": {
+      "_meta": "Update operation with higher latency due to validation",
+      "success_rt": [30, 60],
+      "success_vol": 15000,
+      "fail_rt": [15, 30],
+      "fail_vol": 3000
+    },
+
+    "DELETE": {
+      "_meta": "Cleanup operation with lower volume",
+      "success_rt": [15, 30],
+      "success_vol": 7000,
+      "fail_rt": [10, 20],
+      "fail_vol": 1800
+    }
+
+  },
+
+  "hourly_rules_meta": {
+    "description": "Time-based workload patterns (normal behavior).",
+    "logic": [
+      "GET dominates during peak hours.",
+      "POST and PUT increase during business hours.",
+      "DELETE spikes during maintenance windows.",
+      "These are expected behaviors, not anomalies."
+    ]
+  },
+
+  "hourly_rules": {
+
+    "8": {
+      "_meta": "Morning ramp-up",
+      "GET": {
+        "success_vol_multiplier": 2
+      },
+      "POST": {
+        "success_vol_multiplier": 1.5
+      }
+    },
+
+    "10": {
+      "_meta": "Peak read traffic",
+      "GET": {
+        "success_vol_multiplier": 4
+      }
+    },
+
+    "13": {
+      "_meta": "Afternoon mixed workload",
+      "POST": {
+        "success_vol_multiplier": 2
+      },
+      "PUT": {
+        "success_vol_multiplier": 2
+      }
+    },
+
+    "18": {
+      "_meta": "Evening update-heavy traffic",
+      "PUT": {
+        "success_vol_multiplier": 3,
+        "success_rt_multiplier": 1.4
+      }
+    },
+
+    "22": {
+      "_meta": "Traffic slowdown",
+      "GET": {
+        "success_vol_multiplier": 0.5
+      }
+    },
+
+    "2": {
+      "_meta": "Night maintenance window",
+      "DELETE": {
+        "success_vol_multiplier": 4,
+        "fail_vol_multiplier": 2
+      }
+    }
+  }
+}

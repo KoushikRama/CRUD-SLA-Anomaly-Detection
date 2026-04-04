@@ -1,0 +1,23 @@
+{
+  "active_version": "v1",
+
+  "paths": {
+    "model": "models/v1/model_bundle.pkl",
+    "thresholds": "config/v1/threshold-config.json",
+    "data_config": "config/v1/data-config.json"
+  },
+
+  "data": {
+    "filename": "synthetic_crudop_logs.csv"
+  },
+
+  "s3": {
+    "bucket": "crud-sla",
+    "prefix": "anomaly-detection"
+  },
+
+  "flags": {
+    "upload_to_s3": false,
+    "download_from_s3": false
+  }
+}
