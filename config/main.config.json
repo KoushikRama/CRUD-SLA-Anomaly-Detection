@@ -1,18 +1,17 @@
 {
-  "active_version": "v1",
+  "active_version": "v2",
 
   "paths": {
-    "model": "models/v1/model_bundle.pkl",
-    "thresholds": "config/v1/threshold-config.json",
-    "data_config": "config/v1/data-config.json"
+    "model": "models/v2/model_bundle.pkl",
+    "data_config": "config/v2/data-config.json"
   },
 
   "data": {
-    "filename": "synthetic_crudop_logs.csv"
+    "filename": "synthetic_ecomops_logs_1.csv"
   },
 
   "s3": {
-    "bucket": "crud-sla",
+    "bucket": "e-com-sla",
     "prefix": "anomaly-detection"
   },
 
