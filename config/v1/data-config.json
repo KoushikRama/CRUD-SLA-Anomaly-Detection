@@ -13,9 +13,9 @@
     ]
   },
 
-  "randomness": 0.05,
+  "randomness": 0.1,
 
-  "commands_meta": {
+  "operations_meta": {
     "description": "Baseline behavior per HTTP method.",
     "fields": [
       "success_vol: expected average successful requests",
@@ -25,7 +25,7 @@
     ]
   },
 
-  "commands": {
+  "operations": {
 
     "GET": {
       "_meta": "High-volume read operation with very low latency",
