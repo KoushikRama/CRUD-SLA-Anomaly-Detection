@@ -1,0 +1,168 @@
+{
+  "_meta": {
+    "title": "E-Commerce SLA Metrics Configuration",
+    "version": "3.0.0",
+    "description": "Synthetic SLA config with curve-based traffic modeling and realistic system dynamics.",
+    "owner": "anomaly-detection-system",
+    "last_updated": "2026-04-05",
+    "volume_unit": "requests_per_hour",
+    "logic": [
+      "Traffic follows a continuous curve (midday + evening peaks).",
+      "Volume is generated using time-based curve instead of discrete hourly rules.",
+      "Latency and failures increase with load.",
+      "Failure rates remain realistic (<5% under normal conditions).",
+      "Noise is Gaussian-based and proportional to baseline.",
+      "Anomalies simulate real-world system failures."
+    ]
+  },
+
+  "noise": {
+    "latency_std_pct": 0.1,
+    "success_vol_std_pct": 0.2,
+    "fail_vol_std_pct": 0.25
+  },
+
+  "system_dynamics": {
+    "_meta": "Defines how system behaves under load",
+    "latency_increase_factor": 0.3,
+    "failure_increase_factor": 0.5
+  },
+
+  "targets": [
+    "success_rt_avg",
+    "fail_rt_avg",
+    "success_vol",
+    "fail_vol"
+  ],
+
+  "traffic_curve": {
+    "_meta": "Multi-peak daily traffic model (periodic)",
+
+    "base": 0.5,
+
+    "evening_peak": {
+      "amplitude": 1.3,
+      "center": 20,
+      "spread": 20,
+      "circular": true
+    },
+
+    "midday_peak": {
+      "amplitude": 1.2,
+      "center": 13,
+      "spread": 10
+    },
+
+    "early_dip": {
+      "amplitude": 0.25,
+      "center": 4,
+      "spread": 6
+    }
+  },
+
+  "operations": {
+
+    "browse_products": {
+      "_meta": "High traffic, very low latency read-heavy",
+      "success_rt_avg": [10, 25],
+      "success_vol": 120000,
+      "fail_rt_avg": [5, 10],
+      "fail_vol": 500
+    },
+
+    "view_cart": {
+      "_meta": "Moderate traffic, low latency",
+      "success_rt_avg": [15, 40],
+      "success_vol": 30000,
+      "fail_rt_avg": [10, 20],
+      "fail_vol": 400
+    },
+
+    "add_to_cart": {
+      "_meta": "Write operation, moderate latency",
+      "success_rt_avg": [40, 80],
+      "success_vol": 20000,
+      "fail_rt_avg": [20, 50],
+      "fail_vol": 600
+    },
+
+    "checkout": {
+      "_meta": "Critical flow, moderate volume, higher latency",
+      "success_rt_avg": [100, 250],
+      "success_vol": 8000,
+      "fail_rt_avg": [80, 180],
+      "fail_vol": 300
+    },
+
+    "payment": {
+      "_meta": "Highly critical, sensitive to failure",
+      "success_rt_avg": [150, 400],
+      "success_vol": 6000,
+      "fail_rt_avg": [100, 250],
+      "fail_vol": 250
+    }
+  },
+
+  "hourly_rules": {
+    "_meta": "ONLY for exceptional system behavior (not traffic shaping)",
+
+    "18": {
+      "_meta": "Evening stress conditions",
+      "checkout": {
+        "success_rt_avg_multiplier": 1.2,
+        "fail_vol_multiplier": 1.3
+      },
+      "payment": {
+        "success_rt_avg_multiplier": 1.3,
+        "fail_vol_multiplier": 1.4
+      }
+    },
+
+    "2": {
+      "_meta": "Night maintenance / instability",
+      "browse_products": {
+        "fail_vol_multiplier": 1.2
+      }
+    }
+  },
+
+
+  "anomaly_injection": {
+    "_meta": "Realistic anomaly simulation with subtle and moderate deviations",
+
+    "probability": 0.08,
+
+    "rules": {
+
+      "latency_spike": {
+        "_meta": "Gradual degradation under load or dependency slowdown",
+        "targets": ["success_rt_avg", "fail_rt_avg"],
+        "factor_range": [1.3, 2.2]
+      },
+
+      "traffic_spike": {
+        "_meta": "Sudden increase due to campaigns or external triggers",
+        "targets": ["success_vol"],
+        "factor_range": [1.5, 2.5]
+      },
+
+      "traffic_drop": {
+        "_meta": "Partial outage or reduced incoming traffic",
+        "targets": ["success_vol"],
+        "factor_range": [0.5, 0.8]
+      },
+
+      "failure_spike": {
+        "_meta": "System instability or partial failure",
+        "targets": ["fail_vol"],
+        "factor_range": [1.5, 3.0]
+      },
+
+      "cascade_failure": {
+        "_meta": "Dependent system failure causing latency + errors",
+        "targets": ["fail_vol", "success_rt_avg"],
+        "factor_range": [1.4, 2.5]
+      }
+    }
+  }
+}
