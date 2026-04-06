@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "description": "Threshold configuration for anomaly detection",
+    "strategy": "hybrid_percent_abs"
+  },
+
+  "quantile": {
+    "default": 0.999,
+    "per_target": {
+      "success_rt_avg": 0.999,
+      "fail_rt_avg": 0.999,
+      "success_vol": 0.999,
+      "fail_vol": 0.999
+    }
+  },
+
+  "threshold_rules": {
+    "min_percent_of_pred": 0.05,
+
+    "latency": {
+      "multiplier": 1.2
+    },
+
+    "success_vol": {
+      "multiplier": 1.2
+    },
+
+    "fail_vol": {
+      "multiplier": 1.2
+    }
+  }
+}
