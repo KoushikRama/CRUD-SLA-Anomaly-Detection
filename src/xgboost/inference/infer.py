@@ -5,13 +5,24 @@ from src.common.feature_engineering import prepare_features
 from src.common.load_main_config import get_model_path, load_data_config, load_threshold_config
 from datetime import datetime
 from src.data.generate_test_data import generate_test_data
-
+from src.common.s3_utils import download_from_s3
+from src.common.load_main_config import load_main_config
 
 # =========================================
 # LOAD MODEL
 # =========================================
 def load_model():
-    return joblib.load(get_model_path())
+    config = load_main_config()
+
+    if config["flags"]["download_from_s3"]:
+        bucket = config["s3"]["bucket"]
+        prefix = config["s3"]["prefix"]
+        local_path = get_model_path()
+
+        download_from_s3(local_path, bucket, f"{prefix}/model_bundle.pkl")
+
+    bundle = joblib.load(get_model_path())
+    return bundle
 
 
 def load_bundle_parameters(bundle):

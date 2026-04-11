@@ -5,6 +5,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 from xgboost import XGBRegressor
 import joblib
+from src.common.s3_utils import upload_to_s3
+from src.common.load_main_config import load_main_config
 
 from src.common.feature_engineering import (
     prepare_features,
@@ -110,6 +112,16 @@ def main():
     save_model(models,features,targets)
 
     print("Training commplete")
+
+    config = load_main_config()
+
+    if config["flags"]["upload_to_s3"]:
+        bucket = config["s3"]["bucket"]
+        prefix = config["s3"]["prefix"]
+
+        model_path = get_model_path()
+
+        upload_to_s3(model_path, bucket, f"{prefix}/model_bundle.pkl")
 
 
 # =========================================

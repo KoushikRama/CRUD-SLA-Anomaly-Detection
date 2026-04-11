@@ -1,5 +1,12 @@
 pandas
 numpy
 scikit-learn
-torch
 matplotlib
+fastapi
+uvicorn
+xgboost
+joblib
+boto3
+streamlit
+requests
+python-multipart

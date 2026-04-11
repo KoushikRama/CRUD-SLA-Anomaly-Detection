@@ -8,12 +8,13 @@ sys.path.append(str(ROOT_DIR))
 import streamlit as st
 import plotly.graph_objects as go
 from datetime import datetime
+import pandas as pd
 
 from src.data.generate_test_data import generate_test_data
 from src.xgboost.inference.infer import run_inference
 from src.common.load_main_config import load_data_config
 from src.xgboost.evaluation.evaluate import evaluate
-
+import requests
 
 # =========================================
 # GRAPH FUNCTION (SEPARATE)
@@ -33,7 +34,7 @@ def plot_graph(results, selected_op, selected_metric):
 
     # 🔥 Get anomaly timestamps
     # Get anomaly rows from original filtered data
-    df_anomaly = df_filtered[(df_filtered["Status"] != "Normal ✅") & (df_filtered["Root_Cause"] == selected_metric)]
+    df_anomaly = df_filtered[(df_filtered["Status"] != "Normal ✅") & (df_filtered["Root_Cause"].fillna("") == selected_metric)]
 
     # Aggregate anomaly severity per timestamp
     df_anomaly = df_anomaly.groupby("timestamp").agg({
@@ -82,7 +83,7 @@ def plot_graph(results, selected_op, selected_metric):
             cmin=0,
             cmax=5,
             showscale=True,
-            colorbar=dict(title="Severity")
+            colorbar=dict(title="Severity", thickness = 20, len=0.5)
         )
     ))
 
@@ -133,9 +134,28 @@ if run_button:
 
     st.success("Test data generated")
 
+    st.write(df_test.columns)
+    st.dataframe(df_test.head())
+
     st.info("Running inference...")
 
-    results = run_inference(df_test)
+    API_URL = "http://localhost:8000/predict"
+
+    payload = df_test.copy()
+    payload["timestamp"] = payload["timestamp"].astype(str)
+
+    response = requests.post(
+        API_URL,
+        json=payload.to_dict(orient="records")
+    )
+
+    if response.status_code != 200:
+        st.error("API failed")
+
+    results = pd.DataFrame(response.json())
+
+    print(results.columns)
+    print(results.head())
 
     st.success("Inference completed")
 
