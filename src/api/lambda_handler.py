@@ -1,9 +1,7 @@
 import json
 import pandas as pd
-from src.common.feature_engineering import prepare_features
 
 from src.xgboost.inference.infer import run_inference
-from tests.test_inference import test_inference
 
 def lambda_handler(event, context):
 
@@ -20,7 +18,7 @@ def lambda_handler(event, context):
         df = pd.DataFrame(data)
 
         # Run inference
-        print("testing inference")
+        print("running inference")
         results = run_inference(df)
 
         print(pd.DataFrame(results.head()))
