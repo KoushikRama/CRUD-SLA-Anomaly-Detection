@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 # Fix import path
-ROOT_DIR = Path(__file__).resolve().parents[2]
+ROOT_DIR = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT_DIR))
 
 import streamlit as st
@@ -108,6 +108,12 @@ st.title("🚨 SLA Anomaly Detection Dashboard")
 st.sidebar.header("Controls")
 
 hours = st.sidebar.slider("Test Duration (hours)", 24, 168, 48)
+
+backend = st.sidebar.selectbox(
+    "Select Inference Backend",
+    ["FastAPI", "SageMaker"]
+)
+
 run_button = st.sidebar.button("Run Pipeline")
 
 
@@ -139,15 +145,27 @@ if run_button:
 
     st.info("Running inference...")
 
-    API_URL = "http://localhost:8000/predict"
-
     payload = df_test.copy()
     payload["timestamp"] = payload["timestamp"].astype(str)
 
-    response = requests.post(
-        API_URL,
-        json=payload.to_dict(orient="records")
-    )
+    if backend == "FastAPI":
+        API_URL = "http://localhost:8000/predict"
+
+        response = requests.post(
+            API_URL,
+            json=payload.to_dict(orient="records")
+        )
+
+    else:
+        # SageMaker route (via API Gateway)
+        API_URL = "https://your-api-id.execute-api.us-east-1.amazonaws.com/prod/predict"
+
+        response = requests.post(
+            API_URL,
+            json={
+                "data": payload.to_dict(orient="records")
+            }
+        )
 
     if response.status_code != 200:
         st.error("API failed")

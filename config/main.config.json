@@ -9,11 +9,11 @@
   },
 
   "data": {
-    "filename": "synthetic_ecomops_logs_1.csv"
+    "filename": "synthetic_ecomops_logs.csv"
   },
 
   "s3": {
-    "bucket": "e-com-sla",
+    "bucket": "ecom-sla-anomaly",
     "prefix": "anomaly-detection"
   },
 

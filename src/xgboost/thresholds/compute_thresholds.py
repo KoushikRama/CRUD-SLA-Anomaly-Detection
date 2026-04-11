@@ -1,7 +1,9 @@
 import pandas as pd
 
 from src.common.feature_engineering import prepare_features
-from src.common.load_main_config import get_model_path, get_data_filepath, load_threshold_config
+from src.common.load_main_config import get_model_path, get_data_filepath, load_threshold_config, load_main_config
+from src.common.s3_utils import download_from_s3,upload_to_s3
+from src.xgboost.inference.infer import load_model
 import joblib
 
 
@@ -48,7 +50,7 @@ def generate_thresholds(df, targets):
 
 def main():
 
-    bundle = joblib.load(get_model_path())
+    bundle = load_model()
     models = bundle["models"]
     features = bundle["features"]
     targets = bundle["targets"]
@@ -69,8 +71,18 @@ def main():
     bundle["thresholds"] = thresholds
 
     joblib.dump(bundle, get_model_path())
+    config = load_main_config()
+    if config["flags"]["upload_to_s3"]:
+        bucket = config["s3"]["bucket"]
+        prefix = config["s3"]["prefix"]
+
+        model_path = get_model_path()
+
+        upload_to_s3(model_path, bucket, f"{prefix}/model_bundle.pkl")
+
 
     print("Thresholds added to bundle")
+
 
 # =========================================
 # RUN

@@ -20,6 +20,7 @@ def load_model():
         local_path = get_model_path()
 
         download_from_s3(local_path, bucket, f"{prefix}/model_bundle.pkl")
+        print("loaded model from s3")
 
     bundle = joblib.load(get_model_path())
     return bundle
@@ -63,6 +64,15 @@ def run_inference(df):
 
     # Feature engineering
     df = prepare_features(df)
+
+    # ensure all required feature columns exist
+    all_required_features = set()
+    for t in targets:
+        all_required_features.update(features[t])
+
+    for col in all_required_features:
+        if col not in df.columns:
+            df[col] = 0
 
     results = []
 
