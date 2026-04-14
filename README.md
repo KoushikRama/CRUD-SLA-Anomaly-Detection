@@ -224,9 +224,10 @@ The model must be packaged into a .tar.gz file for SageMaker.
 
 This includes:
 
+This includes:
 - Trained model
-- inference.py
-- feature_engineering.py
+- `inference.py`
+- `feature_engineering.py`
 
 ```
 cd sagemaker_tar/
@@ -236,7 +237,7 @@ tar -czvf model.tar.gz *
 **Step 3: Upload to S3 Bucket**
 
 ```bash
-aws s3 cp model.tar.gz s3://your-unique-s3-bucket-name/ --recursive
+aws s3 cp model.tar.gz s3://your-unique-s3-bucket-name/
 ```
 
 ---
@@ -276,6 +277,8 @@ To expose the SageMaker endpoint as a REST API:
     - Service → SageMaker
     - Action → InvokeEndpoint
 5. Provide your Endpoint Name
+
+📌 After deployment, replace the API URL in the UI config with your API Gateway endpoint.
 
 ---
 
