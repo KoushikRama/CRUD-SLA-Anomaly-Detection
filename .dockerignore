@@ -1,0 +1,6 @@
+notebooks/
+tests/
+.git/
+__pycache__/
+venv/
+data/
