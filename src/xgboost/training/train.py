@@ -94,7 +94,7 @@ def save_model(models,features,targets):
     model_path = get_model_path()
     # create dir
     model_path.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(bundle, model_path)
+    joblib.dump(bundle, model_path, compress=3)
     print("Model Saved to:",model_path)
 
 

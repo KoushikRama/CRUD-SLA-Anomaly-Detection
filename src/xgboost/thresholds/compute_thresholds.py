@@ -70,7 +70,7 @@ def main():
 
     bundle["thresholds"] = thresholds
 
-    joblib.dump(bundle, get_model_path())
+    joblib.dump(bundle, get_model_path(), compress=3)
     config = load_main_config()
     if config["flags"]["upload_to_s3"]:
         bucket = config["s3"]["bucket"]
@@ -79,7 +79,6 @@ def main():
         model_path = get_model_path()
 
         upload_to_s3(model_path, bucket, f"{prefix}/model_bundle.pkl")
-
 
     print("Thresholds added to bundle")
 

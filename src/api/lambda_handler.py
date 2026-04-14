@@ -1,31 +1,29 @@
 import json
-import pandas as pd
+import boto3
+import os
 
-from src.xgboost.inference.infer import run_inference
+runtime = boto3.client("sagemaker-runtime")
+
+ENDPOINT_NAME = os.environ["ENDPOINT_NAME"]
 
 def lambda_handler(event, context):
 
     try:
-        # Parse input
-        body = json.loads(event["body"])
+        # Parse request body
+        body = json.loads(event.get("body", "{}"))
 
-        # Support both formats
-        if isinstance(body, dict) and "data" in body:
-            data = body["data"]
-        else:
-            data = body
+        # Forward to SageMaker
+        response = runtime.invoke_endpoint(
+            EndpointName=ENDPOINT_NAME,
+            ContentType="application/json",
+            Body=json.dumps(body)
+        )
 
-        df = pd.DataFrame(data)
-
-        # Run inference
-        print("running inference")
-        results = run_inference(df)
-
-        print(pd.DataFrame(results.head()))
+        result = response["Body"].read().decode()
 
         return {
             "statusCode": 200,
-            "body": results.to_json(orient="records")
+            "body": result
         }
 
     except Exception as e:
