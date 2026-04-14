@@ -5,7 +5,7 @@
 
 🚀 **Access the deployed dashboard:**
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ecom-sla-anomaly-detection-dashboard-5lvhxfr87rf9xu349caae3.streamlit.app/)
+click -> [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ecom-sla-anomaly-detection-dashboard-5lvhxfr87rf9xu349caae3.streamlit.app/)
 
 ---
 
